@@ -1,10 +1,14 @@
 language: java
 jdk:
   - openjdk11
+env:
+  - DOCKER_PASSWORD="Admin!12+3"
+  - $DOCKER_USERNAME="mbhd90"
 before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker pull openjdk:11-jre-slim-sid
-
 script:
-  - ./mvnw clean install
+  - ./mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent install
   - ./mvnw deploy jib:build -P deploy-docker
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
